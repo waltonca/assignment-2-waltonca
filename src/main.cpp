@@ -91,6 +91,20 @@ bool dfs(std::vector<std::string>& maze, int startRow, int startCol, int exitRow
     return false; // not find the exit
 }
 
+// Save the solved maze to a file
+void saveMazeToFile(const std::vector<std::string>& maze, const std::string& filePath) {
+    std::ofstream file(filePath);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open output file.");
+    }
+
+    for (const auto& line : maze) {
+        file << line << '\n';
+    }
+
+    file.close();
+}
+
 int main(int argc, char* argv[]) {
     if (argc < 3) {
         std::cerr << "Usage: " << argv[0] << " <maze_file> <solution_file>\n";
@@ -127,6 +141,8 @@ int main(int argc, char* argv[]) {
         if (dfs(maze, 1, 0, 49, 50)) {
             std::cout << "Path found:\n";
             printMaze(maze);
+            saveMazeToFile(maze, argv[2]); // Save the solved maze to a file
+            std::cout << "Maze solution saved to " << argv[2] << '\n';
         } else {
             std::cout << "No path found.\n";
         }
