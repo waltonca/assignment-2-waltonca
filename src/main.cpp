@@ -56,39 +56,62 @@ bool dfs(std::vector<std::string>& maze, int startRow, int startCol, int exitRow
     std::stack<std::pair<int, int>> stack;
     stack.push({startRow, startCol});
 
-    // direction：Up, down, left, right
+    // direction: Up, right, down, left
     const std::vector<std::pair<int, int>> DIRECTIONS = {
         {-1, 0}, // up
+        {0, 1},  // right
         {1, 0},  // down
-        {0, -1}, // left
-        {0, 1}   // right
+        {0, -1}  // left
     };
+
+    // Use a visited tag to avoid repeated visits
+    std::vector<std::vector<bool>> visited(MAZE_SIZE, std::vector<bool>(MAZE_SIZE, false));
+    visited[startRow][startCol] = true; // Marking the starting position
 
     while (!stack.empty()) {
         auto [row, col] = stack.top();
-        stack.pop();
 
         // Check to see if you've reached the exit
         if (row == exitRow && col == exitCol) {
-            maze[row][col] = SOLUTION_PATH; // mark path as #
+            maze[row][col] = SOLUTION_PATH; // mark exit path as #
             return true; // found the exit
         }
 
-        // Try every direction
+        // Try every direction in a clockwise manner
+        bool foundNext = false;
         for (const auto& [dr, dc] : DIRECTIONS) {
             int newRow = row + dr;
             int newCol = col + dc;
 
-            // Check if the new position is valid
+            // Check if the new position is valid and not visited
             if (newRow >= 0 && newRow < MAZE_SIZE && newCol >= 0 && newCol < MAZE_SIZE &&
-                maze[newRow][newCol] == PATH) { // If it's space path = walkable path
-                maze[newRow][newCol] = SOLUTION_PATH; // mark as #
+                maze[newRow][newCol] == PATH && !visited[newRow][newCol]) {
+
+                // Mark as visited
+                visited[newRow][newCol] = true;
                 stack.push({newRow, newCol});
+                foundNext = true;
+
+                // Only mark the path if moving forward
+                maze[row][col] = SOLUTION_PATH;
+                break; // Break to avoid going through all directions in this step
+            }
+        }
+
+        // If no unvisited neighbors are found, it means it's a dead-end street
+        if (!foundNext) {
+            stack.pop(); // Backtrack to the previous position
+            // If the top of the stack at this point is a location that has never been visited, mark it as a dead end
+            if (!stack.empty()) {
+                auto [prevRow, prevCol] = stack.top();
+                if (maze[prevRow][prevCol] == SOLUTION_PATH) {
+                    maze[prevRow][prevCol] = PATH; // Restore it to walkable condition
+                }
             }
         }
     }
 
-    return false; // not find the exit
+    return false; // not found the exit
 }
 
 // Save the solved maze to a file
