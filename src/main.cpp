@@ -14,27 +14,6 @@ int main(int argc, char* argv[]) {
         std::cout << "Maze loaded successfully:\n";
         printMaze(maze);
 
-        // use for Debug
-        // check the start and exit coordinate
-        std::cout << "Start: (1, 0) = " << maze[1][0] << '\n'; // start location
-        std::cout << "End: (49, 50) = " << maze[49][50] << '\n'; // exit location
-        // check the row
-        std::cout << "Row 1: ";
-        for (size_t col = 0; col < MAZE_SIZE; ++col) {
-            std::cout << maze[0][col];
-        }
-        std::cout << '\n';
-        std::cout << "Row 2: ";
-        for (size_t col = 0; col < MAZE_SIZE; ++col) {
-            std::cout << maze[1][col];
-        }
-        std::cout << '\n';
-        std::cout << "Row 51: ";
-        for (size_t col = 0; col < MAZE_SIZE; ++col) {
-            std::cout << maze[50][col];
-        }
-        std::cout << '\n';
-
         // Find the path from (1, 0) to (49, 50).
         if (dfs(maze, 1, 0, 49, 50)) {
             std::cout << "Path found:\n";
